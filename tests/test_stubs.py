@@ -9,6 +9,7 @@ TESTS_DIR = os.path.dirname(__file__)
 PASS_DIR = os.path.join(TESTS_DIR, "pass")
 FAIL_DIR = os.path.join(TESTS_DIR, "fail")
 REVEAL_DIR = os.path.join(TESTS_DIR, "reveal")
+CONF = os.path.join(TESTS_DIR, "mypy.ini")
 
 
 def get_test_cases(directory):
@@ -38,7 +39,7 @@ def get_test_cases(directory):
 
 @pytest.mark.parametrize("path,py2_arg", get_test_cases(PASS_DIR))
 def test_success(path, py2_arg):
-    stdout, stderr, exitcode = api.run([path] + py2_arg)
+    stdout, stderr, exitcode = api.run([path, "--conf", CONF] + py2_arg)
     assert exitcode == 0, stdout
     assert re.match(
         r'Success: no issues found in \d+ source files?',
@@ -48,7 +49,7 @@ def test_success(path, py2_arg):
 
 @pytest.mark.parametrize("path,py2_arg", get_test_cases(FAIL_DIR))
 def test_fail(path, py2_arg):
-    stdout, stderr, exitcode = api.run([path] + py2_arg)
+    stdout, stderr, exitcode = api.run([path, "--conf", CONF] + py2_arg)
 
     assert exitcode != 0
 
@@ -85,7 +86,7 @@ def test_fail(path, py2_arg):
 
 @pytest.mark.parametrize("path,py2_arg", get_test_cases(REVEAL_DIR))
 def test_reveal(path, py2_arg):
-    stdout, stderr, exitcode = api.run([path] + py2_arg)
+    stdout, stderr, exitcode = api.run([path, "--conf", CONF] + py2_arg)
 
     with open(path) as fin:
         lines = fin.readlines()
